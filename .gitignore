@@ -1,0 +1,18 @@
+# Ignore everything
+/*
+
+# But keep these
+!app.py
+!static/
+!templates/
+!react_source.zip
+!.gitignore
+!README.md
+
+# Ignore specific large files even if in allowed folders (just in case)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.zip
+!react_source.zip
