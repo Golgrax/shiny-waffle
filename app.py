@@ -1,21 +1,36 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, send_from_directory
 import os
+from templates import index, about, contact, projects, skills, page_not_found, error_404
 
-app = Flask(__name__, static_folder='static', template_folder='templates')
+app = Flask(__name__, static_folder='static')
+
+PAGES = {
+    'index': index.content,
+    'about': about.content,
+    'contact': contact.content,
+    'projects': projects.content,
+    'skills': skills.content,
+    '404': error_404.content,
+    '_not-found': page_not_found.content
+}
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return PAGES['index']
 
 @app.route('/<path:path>')
-def pages(path):
-    # Check if the requested path corresponds to an HTML file in templates
-    html_file = f"{path}.html"
-    if os.path.exists(os.path.join(app.template_folder, html_file)):
-        return render_template(html_file)
+def serve_pages(path):
+    # Check if path is in our PAGES mapping
+    if path in PAGES:
+        return PAGES[path]
     
-    # Otherwise, try serving from static
-    return send_from_directory(app.static_folder, path)
+    # Check if it's a file in static
+    static_file = os.path.join(app.static_folder, path)
+    if os.path.isfile(static_file):
+        return send_from_directory(app.static_folder, path)
+    
+    # Fallback to 404
+    return PAGES['404'], 404
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
